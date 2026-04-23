@@ -1,23 +1,39 @@
-import React, { useState } from 'react';
+// src/App.js — AFTER REFACTOR (v0.8-maintenance)
+// TD-02 FIXED: Added edit functionality using editFlashcard from utils
+// TD-04 FIXED: All handlers wrapped in useCallback + functional setState
+
+import React, { useState, useCallback } from 'react';
 import './App.css';
 import FlashcardForm from './components/FlashcardForm';
 import Quiz from './components/Quiz';
 import CardCounter from './components/CardCounter';
 import Flashcard from './components/Flashcard';
-import { createFlashcard, addFlashcard, deleteFlashcard } from './flashcardUtils';
+import { createFlashcard, addFlashcard, deleteFlashcard, editFlashcard } from './flashcardUtils';
 
 function App() {
   const [deck, setDeck] = useState([]);
   const [isQuizMode, setIsQuizMode] = useState(false);
 
-  const handleAddCard = ({ question, answer }) => {
-    const newCard = createFlashcard(question, answer);
-    setDeck(addFlashcard(deck, newCard));
-  };
+  // ✅ TD-04 FIXED: useCallback prevents recreation on every render
+  // ✅ Functional setState avoids stale closure bugs
+  const handleAddCard = useCallback(({ question, answer }) => {
+    try {
+      const newCard = createFlashcard(question, answer);
+      setDeck((prevDeck) => addFlashcard(prevDeck, newCard));
+    } catch (error) {
+      console.error('Failed to create card:', error.message);
+    }
+  }, []);
 
-  const handleDeleteCard = (id) => {
-    setDeck(deleteFlashcard(deck, id));
-  };
+  // ✅ TD-04 FIXED: useCallback + functional setState
+  const handleDeleteCard = useCallback((id) => {
+    setDeck((prevDeck) => deleteFlashcard(prevDeck, id));
+  }, []);
+
+  // ✅ TD-02 FIXED: New edit handler using editFlashcard from utils
+  const handleEditCard = useCallback((id, newQuestion, newAnswer) => {
+    setDeck((prevDeck) => editFlashcard(prevDeck, id, newQuestion, newAnswer));
+  }, []);
 
   return (
     <div className="App">
@@ -33,8 +49,8 @@ function App() {
             <div className="sidebar">
               <CardCounter deck={deck} />
               <FlashcardForm onAddCard={handleAddCard} />
-              <button 
-                className="start-quiz-btn" 
+              <button
+                className="start-quiz-btn"
                 disabled={deck.length === 0}
                 onClick={() => setIsQuizMode(true)}
               >
@@ -48,7 +64,12 @@ function App() {
               ) : (
                 <div className="flashcard-list">
                   {deck.map((card) => (
-                    <Flashcard key={card.id} card={card} onDelete={handleDeleteCard} />
+                    <Flashcard
+                      key={card.id}
+                      card={card}
+                      onDelete={handleDeleteCard}
+                      onEdit={handleEditCard}  // ✅ TD-02: Now passing edit handler
+                    />
                   ))}
                 </div>
               )}
@@ -56,6 +77,10 @@ function App() {
           </div>
         )}
       </main>
+
+      <footer className="app-footer">
+        <p>Flashcard Master v0.8 — SIAM Final Project</p>
+      </footer>
     </div>
   );
 }
