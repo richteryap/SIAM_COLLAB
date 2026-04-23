@@ -3,6 +3,6 @@ import App from './App';
 
 test('renders the app header', () => {
   render(<App />);
-  const headerElement = screen.getByText(/Flashcard Master/i);
+  const headerElement = screen.getByRole('heading', { name: /Flashcard Master/i });
   expect(headerElement).toBeInTheDocument();
 });
