@@ -57,15 +57,16 @@ export function editFlashcard(deck, id, newQuestion, newAnswer) {
  */
 export function calculateScore(correct, total) {
     if (total === 0) {
-        return { correct: 0, incorrect: 0, total: 0, percentage: 0, grade: 'N/A' };
+        return { correct: 0, incorrect: 0, total: 0, percentage: 0, grade: 'N/A', passed: false };
     }
     const percentage = Math.round((correct / total) * 100);
+    const passed = percentage >= 50;
     let grade = 'F';
     if (percentage >= 90) grade = 'A';
     else if (percentage >= 80) grade = 'B';
     else if (percentage >= 70) grade = 'C';
     else if (percentage >= 60) grade = 'D';
-    return { correct, incorrect: total - correct, total, percentage, grade };
+    return { correct, incorrect: total - correct, total, percentage, grade, passed };
 }
 
 /**
