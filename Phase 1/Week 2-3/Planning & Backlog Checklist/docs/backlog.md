@@ -1,7 +1,9 @@
-# Product Backlog — Flashcard Quiz App
+# Product Backlog — Flashcard Quiz App (Updated Week 3)
 
 ## Project Description
 A simple web-based flashcard quiz application where users can create question/answer cards, flip them to reveal answers, and take quizzes to track their score. Built with React (frontend) and Node.js (backend).
+
+> **Change Log:** US-11 added in Week 3 via change request simulation.
 
 ---
 
@@ -95,7 +97,7 @@ A simple web-based flashcard quiz application where users can create question/an
 - **Acceptance Criteria:**
   - Cards are presented in a random order each time a quiz starts
   - The shuffle produces a different order than the previous attempt (when possible)
-  - The progress indicator still tracks position correctly (e.g., "Card 2 of 10")
+  - The progress indicator still tracks position correctly
   - All cards are included — no duplicates or missing cards
 
 ### US-10: Persistent Storage
@@ -108,21 +110,32 @@ A simple web-based flashcard quiz application where users can create question/an
   - Closing and reopening the browser retains all cards
   - If storage is cleared, the app shows the empty state gracefully
 
+### US-11: Search / Filter Flashcards *(Added Week 3 — Change Request)*
+- **As a** user, **I want** to search through my flashcards by keyword **so that** I can quickly find a specific card in a large deck.
+- **Priority:** Medium
+- **Story Points:** 3
+- **Acceptance Criteria:**
+  - A search bar is displayed above the card list
+  - Typing filters cards in real-time (matches question or answer text)
+  - Clearing the search shows all cards again
+  - Shows "No cards found" if no matches
+
 ---
 
 ## Summary Table
 
-| Story ID | Title               | Priority | Points |
-|----------|---------------------|----------|--------|
-| US-01    | Create a Flashcard   | High     | 3      |
-| US-02    | View All Flashcards  | High     | 2      |
-| US-03    | Flip a Flashcard     | High     | 3      |
-| US-04    | Delete a Flashcard   | High     | 2      |
-| US-05    | Edit a Flashcard     | High     | 3      |
-| US-06    | Start a Quiz         | High     | 5      |
-| US-07    | Self-Grade (Quiz)    | Medium   | 3      |
-| US-08    | Quiz Score Summary   | Medium   | 3      |
-| US-09    | Shuffle Quiz Order   | Medium   | 2      |
-| US-10    | Persistent Storage   | Low      | 5      |
+| Story ID | Title                | Priority | Points | Sprint    |
+|----------|----------------------|----------|--------|-----------|
+| US-01    | Create a Flashcard    | High     | 3      | Sprint 1  |
+| US-02    | View All Flashcards   | High     | 2      | Sprint 1  |
+| US-03    | Flip a Flashcard      | High     | 3      | Sprint 1  |
+| US-04    | Delete a Flashcard    | High     | 2      | Sprint 1  |
+| US-05    | Edit a Flashcard      | High     | 3      | Sprint 1  |
+| US-06    | Start a Quiz          | High     | 5      | Sprint 1  |
+| US-07    | Self-Grade (Quiz)     | Medium   | 3      | Sprint 2  |
+| US-08    | Quiz Score Summary    | Medium   | 3      | Sprint 2  |
+| US-09    | Shuffle Quiz Order    | Medium   | 2      | Sprint 2  |
+| US-10    | Persistent Storage    | Low      | 5      | Sprint 3  |
+| US-11    | Search / Filter Cards | Medium   | 3      | Sprint 2  |
 
-**Total Story Points:** 31
+**Total Story Points:** 34
