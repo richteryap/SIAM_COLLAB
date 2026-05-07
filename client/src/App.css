@@ -478,6 +478,55 @@ form button[type="submit"]:hover {
   background-color: #6b7280;
 }
 
+/* ── Modal ────────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-card {
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.modal-card h2 {
+  margin: 0 0 1.5rem;
+  font-size: 1.25rem;
+}
+
+.modal-error {
+  color: var(--danger);
+  font-size: 0.875rem;
+  margin: -0.5rem 0 0.75rem;
+}
+
+.modal-cancel {
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  transition: color 0.2s;
+}
+
+.modal-cancel:hover {
+  color: var(--text);
+}
+
 /* ── Auth Buttons ─────────────────────────────────── */
 .auth-btn {
   font-family: 'Inter', sans-serif;

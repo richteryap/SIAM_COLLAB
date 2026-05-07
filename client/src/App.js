@@ -6,11 +6,13 @@ import Quiz from './components/Quiz';
 import CardCounter from './components/CardCounter';
 import Flashcard from './components/Flashcard';
 import { createFlashcard, addFlashcard, deleteFlashcard, editFlashcard } from './flashcardUtils';
+import LoginModal from './components/LoginModal';
 
 function App() {
   const [deck, setDeck] = useState([]);
   const [isQuizMode, setIsQuizMode] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // ✅ Security: Check for auth token on initial load
   useEffect(() => {
@@ -21,15 +23,10 @@ function App() {
   }, []);
 
   const handleLogin = () => {
-    console.log('[KPI] login:attempt');
-    const password = prompt("Enter admin password (hint: siam-admin-2026):");
-    if (password === 'siam-admin-2026') {
-      localStorage.setItem('flashcard_admin_token', 'secure-admin-session-123');
-      setIsAdmin(true);
-      console.log('[KPI] login:success');
-    } else {
-      alert("Unauthorized access.");
-    }
+    console.log('[KPI] login:success');
+    localStorage.setItem('flashcard_admin_token', 'secure-admin-session-123');
+    setIsAdmin(true);
+    setShowLoginModal(false);
   };
 
   const handleLogout = () => {
@@ -66,7 +63,7 @@ function App() {
           {isAdmin ? (
             <button onClick={handleLogout} className="auth-btn auth-logout">⎋ Log Out</button>
           ) : (
-            <button onClick={handleLogin} className="auth-btn auth-login">🔐 Admin Login</button>
+            <button onClick={() => setShowLoginModal(true)} className="auth-btn auth-login">🔐 Admin Login</button>
           )}
         </div>
       </header>
@@ -124,6 +121,13 @@ function App() {
       <footer className="app-footer">
         <p>Flashcard Master v0.8 — SIAM Final Project</p>
       </footer>
+
+      {showLoginModal && (
+        <LoginModal
+          onLogin={handleLogin}
+          onClose={() => setShowLoginModal(false)}
+        />
+      )}
     </div>
   );
 }
