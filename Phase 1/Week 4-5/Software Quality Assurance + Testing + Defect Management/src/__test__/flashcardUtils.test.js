@@ -153,7 +153,7 @@ describe('calculateScore', () => {
         const result = calculateScore(1, 4);
 
         expect(result.correct).toBe(1);
-        expect(result.incorrect).toBe(3);
+        expect(result.incorrect).toBe(3);x
         expect(result.total).toBe(4);
         expect(result.percentage).toBe(25);
     });

@@ -3,10 +3,11 @@
 ## Team Members
 | Name | GitHub Username |
 |------|----------------|
-| [Member 1] | @member1 |
-| [Member 2] | @member2 |
-| [Member 3] | @member3 |
-| [Member 4] | @member4 |
+| Kent John Chavo | @kazutokei |
+| Joseph Pendon | @pendonj14 |
+| Richter Anthony Yap | @richteryap |
+| Precious Gamalo | @mizuki1113 |
+| Koby Atilano | @towtu |
 
 ## Role Descriptions
 
@@ -34,13 +35,20 @@
 - Ensures README is up to date
 - Reviews PR descriptions for completeness
 
+### Lead Developer
+- Leads code architecture decisions
+- Reviews all PRs for code quality
+- Helps teammates debug issues
+- Ensures coding standards are followed
+
 ## Role Rotation Schedule
 
-| Sprint   | PM/Scrum   | QA Lead    | DevOps Lead | Docs Lead  |
-|----------|------------|------------|-------------|------------|
-| Sprint 1 | [Member 1] | [Member 2] | [Member 3]  | [Member 4] |
-| Sprint 2 | [Member 2] | [Member 3] | [Member 4]  | [Member 1] |
-| Sprint 3 | [Member 3] | [Member 4] | [Member 1]  | [Member 2] |
-| Sprint 4 | [Member 4] | [Member 1] | [Member 2]  | [Member 3] |
+| Sprint   | PM/Scrum             | QA Lead              | DevOps Lead           | Docs Lead            | Lead Developer       |
+|----------|----------------------|----------------------|-----------------------|----------------------|----------------------|
+| Sprint 1 | Kent John Chavo      | Joseph Pendon        | Richter Anthony Yap   | Precious Gamalo      | Koby Atilano         |
+| Sprint 2 | Joseph Pendon        | Richter Anthony Yap  | Precious Gamalo       | Koby Atilano         | Kent John Chavo      |
+| Sprint 3 | Richter Anthony Yap  | Precious Gamalo      | Koby Atilano          | Kent John Chavo      | Joseph Pendon        |
+| Sprint 4 | Precious Gamalo      | Koby Atilano         | Kent John Chavo       | Joseph Pendon        | Richter Anthony Yap  |
+| Sprint 5 | Koby Atilano         | Kent John Chavo      | Joseph Pendon         | Richter Anthony Yap  | Precious Gamalo      |
 
 > **Note:** Roles rotate each sprint so every member gains experience in all areas.
