@@ -1,8 +1,5 @@
-// src/App.js — AFTER REFACTOR (v0.8-maintenance)
-// TD-02 FIXED: Added edit functionality using editFlashcard from utils
-// TD-04 FIXED: All handlers wrapped in useCallback + functional setState
-
-import React, { useState, useCallback } from 'react';
+// src/App.js — AFTER REFACTOR (v0.8-maintenance + Security)
+import React, { useState, useCallback, useEffect } from 'react';
 import './App.css';
 import FlashcardForm from './components/FlashcardForm';
 import Quiz from './components/Quiz';
@@ -13,9 +10,31 @@ import { createFlashcard, addFlashcard, deleteFlashcard, editFlashcard } from '.
 function App() {
   const [deck, setDeck] = useState([]);
   const [isQuizMode, setIsQuizMode] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  // ✅ TD-04 FIXED: useCallback prevents recreation on every render
-  // ✅ Functional setState avoids stale closure bugs
+  // ✅ Security: Check for auth token on initial load
+  useEffect(() => {
+    const token = localStorage.getItem('flashcard_admin_token');
+    if (token === 'secure-admin-session-123') {
+      setIsAdmin(true);
+    }
+  }, []);
+
+  const handleLogin = () => {
+    const password = prompt("Enter admin password (hint: siam-admin-2026):");
+    if (password === 'siam-admin-2026') {
+      localStorage.setItem('flashcard_admin_token', 'secure-admin-session-123');
+      setIsAdmin(true);
+    } else {
+      alert("Unauthorized access.");
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('flashcard_admin_token');
+    setIsAdmin(false);
+  };
+
   const handleAddCard = useCallback(({ question, answer }) => {
     try {
       const newCard = createFlashcard(question, answer);
@@ -25,12 +44,10 @@ function App() {
     }
   }, []);
 
-  // ✅ TD-04 FIXED: useCallback + functional setState
   const handleDeleteCard = useCallback((id) => {
     setDeck((prevDeck) => deleteFlashcard(prevDeck, id));
   }, []);
 
-  // ✅ TD-02 FIXED: New edit handler using editFlashcard from utils
   const handleEditCard = useCallback((id, newQuestion, newAnswer) => {
     setDeck((prevDeck) => editFlashcard(prevDeck, id, newQuestion, newAnswer));
   }, []);
@@ -39,6 +56,13 @@ function App() {
     <div className="App">
       <header className="app-header">
         <h1>✨ Flashcard Master</h1>
+        <div className="auth-controls">
+          {isAdmin ? (
+            <button onClick={handleLogout} className="auth-btn">Log Out Admin</button>
+          ) : (
+            <button onClick={handleLogin} className="auth-btn">Admin Login</button>
+          )}
+        </div>
       </header>
 
       <main className="app-main">
@@ -48,7 +72,16 @@ function App() {
           <div className="dashboard">
             <div className="sidebar">
               <CardCounter deck={deck} />
-              <FlashcardForm onAddCard={handleAddCard} />
+
+              {/* ✅ Security: Only admins can add cards */}
+              {isAdmin ? (
+                <FlashcardForm onAddCard={handleAddCard} />
+              ) : (
+                <div className="auth-warning">
+                  <p>Read-Only Mode. Please log in to modify the deck.</p>
+                </div>
+              )}
+
               <button
                 className="start-quiz-btn"
                 disabled={deck.length === 0}
@@ -68,7 +101,8 @@ function App() {
                       key={card.id}
                       card={card}
                       onDelete={handleDeleteCard}
-                      onEdit={handleEditCard}  // ✅ TD-02: Now passing edit handler
+                      onEdit={handleEditCard}
+                      isAdmin={isAdmin} // ✅ Security: Pass admin state to child
                     />
                   ))}
                 </div>
