@@ -58,7 +58,15 @@ jobs:
           cd client
           npm run build
 
-      # Step 7: Upload coverage artifact
+      # Step 7: Upload the production build
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: client/build/
+          retention-days: 1
+
+      # Step 8: Upload coverage artifact
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v4
@@ -66,3 +74,43 @@ jobs:
           name: coverage-report
           path: client/coverage/
           retention-days: 7
+
+  deploy:
+    name: Deploy & Smoke Test
+    # Run if the build-and-test job passes AND the branch is main
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact
+          path: client/build/
+
+      - name: Deploy to Production
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }} 
+        run: |
+          echo "Deploying application using provided secrets..."
+          # Example for Vercel: npx vercel deploy --prod --token=$DEPLOY_TOKEN --yes
+          # Example for generic server: scp -r client/build/* user@server:/var/www/html/
+
+      - name: Run Smoke Test
+        env:
+          PROD_URL: ${{ secrets.PROD_URL }} 
+        run: |
+          echo "Waiting for deployment to stabilize..."
+          sleep 10  
+          
+          echo "Pinging production URL: $PROD_URL"
+          # -s (silent), -o /dev/null (hide output), -w (print HTTP code)
+          HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" $PROD_URL)
+          
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "Smoke test passed! Endpoint returned 200 OK."
+          else
+            echo "Smoke test failed! HTTP status: $HTTP_STATUS"
+            exit 1
+          fi
