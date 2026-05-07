@@ -83,6 +83,31 @@ jobs:
           path: client/coverage/
           retention-days: 7
 
+  docker:
+    name: Docker Build
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t flashcard-master:${{ github.sha }} .
+
+      - name: Verify container starts
+        run: |
+          docker run -d --name flashcard-test -p 8080:80 flashcard-master:${{ github.sha }}
+          sleep 3
+          HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" http://localhost:8080)
+          echo "Container health check: HTTP $HTTP_STATUS"
+          docker stop flashcard-test
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "Container health check failed!"
+            exit 1
+          fi
+          echo "Docker build and container health check passed."
+
   deploy:
     name: Deploy & Smoke Test
     # Run if the build-and-test job passes AND the branch is main

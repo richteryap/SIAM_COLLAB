@@ -19,6 +19,7 @@
 | Lint | ESLint (`react-app` preset) | All pushes/PRs | Code quality gated |
 | Test | Jest + RTL (`--coverage`) | All pushes/PRs | Regression safety net |
 | Build | `npm run build` (webpack) | All pushes/PRs | Production bundle verified |
+| **Docker build** | `docker build` + container health check | After build passes | Image built & verified runnable |
 | Deploy | Custom via `DEPLOY_TOKEN` | `main` push only | Artifacts shipped to host |
 | Smoke test | `curl` HTTP 200 check | After deploy | Live URL verified post-deploy |
 
@@ -28,6 +29,8 @@
 |-------|--------|
 | Tests | ✅ 17/17 passing |
 | Test suites | ✅ 2/2 passing |
+| Docker image | ✅ Multi-stage build (Node 18 → nginx-alpine) |
+| Container health check | ✅ HTTP 200 verified on port 8080 in CI |
 | Build | ✅ Compiles cleanly |
 | Lint | ✅ No blocking errors |
 | Security audit | ✅ Non-blocking (accepted react-scripts build-time risks documented) |
@@ -153,3 +156,74 @@ Deploying a pre-built React bundle to GitHub Pages or Vercel means the app is se
 | Non-blocking `npm audit` | 26 build-time vulnerabilities in `react-scripts` are transitive and do not appear in production bundle; blocking on them would halt CI for accepted risk |
 | No persistence for deck | Out of scope for v1.0; flagged as highest-priority improvement in the cost-benefit and KPI reports |
 | Node 18.x in CI matrix | LTS version; stable and supported; avoids bleeding-edge Node risks |
+| Dockerize over staging/monitoring | Produces a concrete portable artifact; most universal cloud improvement for a static app; enables future Kubernetes or cloud-run deployment with no code changes |
+
+---
+
+## 8. Cloud/DevOps Improvement — Dockerization (Week 15)
+
+### What was done
+
+A production-grade `Dockerfile` was added to the project root using a **multi-stage build** pattern:
+
+```dockerfile
+# Stage 1 — Build React app with Node 18
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY client/package*.json ./
+RUN npm ci
+COPY client/ .
+RUN npm run build
+
+# Stage 2 — Serve compiled bundle with nginx
+FROM nginx:alpine
+RUN rm -rf /usr/share/nginx/html/*
+COPY --from=builder /app/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+A `.dockerignore` file was also added to exclude `node_modules`, `build/`, `coverage/`, and docs from the image context — keeping the image small and the build fast.
+
+### Why multi-stage?
+
+| Concern | Solution |
+|---------|----------|
+| Image size | Node 18 image (~350 MB) is only used for building; the final image is nginx-alpine (~25 MB) |
+| Security surface | No Node.js, npm, or source code in the production image — only compiled static files |
+| Reproducibility | `npm ci` uses the locked `package-lock.json`, identical to the CI pipeline |
+
+### CI integration
+
+A new `docker` job was added to `.github/workflows/ci.yml` that runs after `build-and-test` passes:
+
+1. Builds the Docker image tagged with the Git commit SHA
+2. Starts a container on port 8080
+3. Runs an HTTP health check (`curl` → expects HTTP 200)
+4. Stops and removes the container
+
+This guarantees that every commit to the repository produces a valid, runnable Docker image.
+
+### How to run locally
+
+```bash
+# Build the image
+docker build -t flashcard-master .
+
+# Run the container
+docker run -p 8080:80 flashcard-master
+
+# Open in browser
+open http://localhost:8080
+```
+
+### Cloud deployment potential
+
+With Docker in place, the app can now be deployed to any container-capable cloud service with a single command — no platform-specific build configuration required:
+
+| Platform | Command |
+|----------|---------|
+| Google Cloud Run | `gcloud run deploy --image flashcard-master` |
+| AWS App Runner | Push image to ECR, point App Runner at it |
+| Azure Container Apps | `az containerapp up --image flashcard-master` |
+| Railway / Render | Connect repo; auto-detects Dockerfile |

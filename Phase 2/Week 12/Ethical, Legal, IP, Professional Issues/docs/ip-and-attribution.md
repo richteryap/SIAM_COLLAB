@@ -7,7 +7,7 @@ See [`/LICENSE`](../../../../LICENSE) at the project root for the full license t
 
 The MIT License permits anyone to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of this software, provided the original copyright notice is retained.
 
-**Copyright © 2026 Joseph Pendon**
+**Copyright © 2026 Joseph Pendon, Ritcher Anthony Yap, Koby Atilano, Kent John Chavo, & Precious Gamalo**
 
 ---
 
