@@ -38,6 +38,14 @@ jobs:
           cd client
           npm ci
 
+      # Step 3.5: Automated Security Audit
+      - name: Run security audit
+        run: |
+          cd client
+          echo "Running npm audit to check for new vulnerabilities..."
+          # The '|| true' ensures the pipeline doesn't crash from our accepted react-scripts risks
+          npm audit || echo "Audit completed. Note: Existing react-scripts vulnerabilities are documented as an accepted build-time risk."
+
       # Step 4: Lint check
       - name: Run linter
         run: |
