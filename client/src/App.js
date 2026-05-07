@@ -21,10 +21,12 @@ function App() {
   }, []);
 
   const handleLogin = () => {
+    console.log('[KPI] login:attempt');
     const password = prompt("Enter admin password (hint: siam-admin-2026):");
     if (password === 'siam-admin-2026') {
       localStorage.setItem('flashcard_admin_token', 'secure-admin-session-123');
       setIsAdmin(true);
+      console.log('[KPI] login:success');
     } else {
       alert("Unauthorized access.");
     }
@@ -33,12 +35,14 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('flashcard_admin_token');
     setIsAdmin(false);
+    console.log('[KPI] logout');
   };
 
   const handleAddCard = useCallback(({ question, answer }) => {
     try {
       const newCard = createFlashcard(question, answer);
       setDeck((prevDeck) => addFlashcard(prevDeck, newCard));
+      console.log('[KPI] card:added', { cardId: newCard.id, questionLength: newCard.question.length });
     } catch (error) {
       console.error('Failed to create card:', error.message);
     }
@@ -46,10 +50,12 @@ function App() {
 
   const handleDeleteCard = useCallback((id) => {
     setDeck((prevDeck) => deleteFlashcard(prevDeck, id));
+    console.log('[KPI] card:deleted', { cardId: id });
   }, []);
 
   const handleEditCard = useCallback((id, newQuestion, newAnswer) => {
     setDeck((prevDeck) => editFlashcard(prevDeck, id, newQuestion, newAnswer));
+    console.log('[KPI] card:edited', { cardId: id });
   }, []);
 
   return (
@@ -58,9 +64,9 @@ function App() {
         <h1>✨ Flashcard Master</h1>
         <div className="auth-controls">
           {isAdmin ? (
-            <button onClick={handleLogout} className="auth-btn">Log Out Admin</button>
+            <button onClick={handleLogout} className="auth-btn auth-logout">⎋ Log Out</button>
           ) : (
-            <button onClick={handleLogin} className="auth-btn">Admin Login</button>
+            <button onClick={handleLogin} className="auth-btn auth-login">🔐 Admin Login</button>
           )}
         </div>
       </header>
@@ -85,7 +91,10 @@ function App() {
               <button
                 className="start-quiz-btn"
                 disabled={deck.length === 0}
-                onClick={() => setIsQuizMode(true)}
+                onClick={() => {
+                  console.log('[KPI] quiz:start', { deckSize: deck.length });
+                  setIsQuizMode(true);
+                }}
               >
                 🚀 Start Quiz
               </button>

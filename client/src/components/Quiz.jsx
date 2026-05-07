@@ -25,6 +25,9 @@ function Quiz({ deck, onExit }) {
             setIsFlipped(false);
         } else {
             setQuizComplete(true);
+            const correctCount = newResults.filter((r) => r.gotIt).length;
+            const pct = Math.round((correctCount / totalCards) * 100);
+            console.log('[KPI] quiz:complete', { correct: correctCount, incorrect: totalCards - correctCount, total: totalCards, percentage: pct, passed: pct >= 50 });
         }
     };
 
@@ -115,7 +118,7 @@ function Quiz({ deck, onExit }) {
                 </div>
             )}
 
-            <button onClick={onExit} className="btn-exit" data-testid="exit-quiz-btn">
+            <button onClick={() => { console.log('[KPI] quiz:early-exit', { currentIndex, totalCards }); onExit(); }} className="btn-exit" data-testid="exit-quiz-btn">
                 Exit Quiz
             </button>
         </div>
