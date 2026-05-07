@@ -10,16 +10,33 @@ function FlashcardForm({ onAddCard }) {
         e.preventDefault();
         setError('');
 
-        if (!question.trim()) {
+        const trimmedQuestion = question.trim();
+        const trimmedAnswer = answer.trim();
+
+        // 1. Empty state validation
+        if (!trimmedQuestion) {
             setError('Question is required');
             return;
         }
-        if (!answer.trim()) {
+        if (!trimmedAnswer) {
             setError('Answer is required');
             return;
         }
 
-        onAddCard({ question: question.trim(), answer: answer.trim() });
+        // 2. Boundary limits
+        if (trimmedQuestion.length > 200 || trimmedAnswer.length > 500) {
+            setError('Input exceeds maximum character limits.');
+            return;
+        }
+
+        // 3. XSS Mitigation: Block explicit HTML tags
+        const htmlTagRegex = /<[^>]*>?/gm;
+        if (htmlTagRegex.test(trimmedQuestion) || htmlTagRegex.test(trimmedAnswer)) {
+            setError('Special characters like < and > are not allowed.');
+            return;
+        }
+
+        onAddCard({ question: trimmedQuestion, answer: trimmedAnswer });
         setQuestion('');
         setAnswer('');
     };
@@ -27,9 +44,8 @@ function FlashcardForm({ onAddCard }) {
     return (
         <form onSubmit={handleSubmit} data-testid="flashcard-form">
             <h2>Add New Flashcard</h2>
-
             {error && <p data-testid="error-message" style={{ color: 'red' }}>{error}</p>}
-
+            
             <div>
                 <label htmlFor="question">Question:</label>
                 <input
@@ -37,7 +53,7 @@ function FlashcardForm({ onAddCard }) {
                     type="text"
                     value={question}
                     onChange={(e) => setQuestion(e.target.value)}
-                    placeholder="Enter your question"
+                    placeholder="Enter your question (max 200 chars)"
                     data-testid="question-input"
                 />
             </div>
@@ -49,7 +65,7 @@ function FlashcardForm({ onAddCard }) {
                     type="text"
                     value={answer}
                     onChange={(e) => setAnswer(e.target.value)}
-                    placeholder="Enter the answer"
+                    placeholder="Enter the answer (max 500 chars)"
                     data-testid="answer-input"
                 />
             </div>

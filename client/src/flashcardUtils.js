@@ -5,16 +5,25 @@
  * Creates a new flashcard object
  */
 export function createFlashcard(question, answer) {
+    if (typeof question !== 'string' || typeof answer !== 'string') {
+        throw new Error('Inputs must be valid text strings');
+    }
+
     if (!question || !question.trim()) {
         throw new Error('Question is required');
     }
     if (!answer || !answer.trim()) {
         throw new Error('Answer is required');
     }
+
+    // Final sanitization layer: escape stray angle brackets
+    const safeQuestion = question.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const safeAnswer = answer.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
     return {
         id: Date.now().toString(),
-        question: question.trim(),
-        answer: answer.trim(),
+        question: safeQuestion.trim(),
+        answer: safeAnswer.trim(),
         createdAt: new Date().toISOString(),
     };
 }
